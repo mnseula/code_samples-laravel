@@ -1,0 +1,130 @@
+On the command line create the following:
+
+type:composer global require laravel/installer //this installs Laravel
+
+type:
+laravel new laravel-api-example
+cd laravel-api-example
+
+Create Model and Migration
+Next, let's create a model and migration for a resource. In this example, we'll create a "Task" resource. Run the following command to generate the model and migration:
+
+type:php artisan make:model Task -m
+
+This will create a "Task" model and a migration file for the "tasks" table.
+
+Step 4: Define Database Schema
+Open the generated migration file (located in the "database/migrations" directory) and define the database schema for the "tasks" table. For example:
+
+// database/migrations/xxxx_xx_xx_xxxxxx_create_tasks_table.php
+
+public function up()
+{
+    Schema::create('tasks', function (Blueprint $table) {
+        $table->id();
+        $table->string('title');
+        $table->text('description')->nullable();
+        $table->boolean('completed')->default(false);
+        $table->timestamps();
+    });
+}
+
+Run the migration to create the "tasks" table:
+
+php artisan migrate
+
+Step 5: Create the TaskController
+Next, create a controller to handle the API endpoints for tasks:
+
+
+php artisan make:controller TaskController --api
+
+Step 5: Create the TaskController
+
+Next, create a controller to handle the API endpoints for tasks:
+
+type php artisan make:controller TaskController --api
+
+Give me an M, give Me a V, Give me a C.  In this case we only have an M and a C, We don't need the View because we will hook up Postman to see the end result:
+
+Step 6: Define API Routes
+Open the "routes/api.php" file and define the routes for the API:
+
+// routes/api.php
+
+Route::resource('tasks', 'TaskController');
+
+Step 7: Implement TaskController
+Edit the "TaskController" to implement the CRUD operations for tasks:
+
+// app/Http/Controllers/TaskController.php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use App\Models\Task;
+
+class TaskController extends Controller
+{
+    public function index()
+    {
+        $tasks = Task::all();
+        return response()->json($tasks);
+    }
+
+    public function store(Request $request)
+    {
+        $validatedData = $request->validate([
+            'title' => 'required|max:255',
+            'description' => 'nullable',
+        ]);
+
+        $task = Task::create($validatedData);
+
+        return response()->json($task, 201);
+    }
+
+    public function show($id)
+    {
+        $task = Task::findOrFail($id);
+        return response()->json($task);
+    }
+
+    public function update(Request $request, $id)
+    {
+        $validatedData = $request->validate([
+            'title' => 'required|max:255',
+            'description' => 'nullable',
+            'completed' => 'boolean',
+        ]);
+
+        $task = Task::findOrFail($id);
+        $task->update($validatedData);
+
+        return response()->json($task, 200);
+    }
+
+    public function destroy($id)
+    {
+        $task = Task::findOrFail($id);
+        $task->delete();
+
+        return response()->json(null, 204);
+    }
+}
+
+Step 8: Test the API
+Now you can test your API endpoints using tools like Postman or cURL.
+
+To list all tasks, make a GET request to /api/tasks.
+To create a new task, make a POST request to /api/tasks with the JSON payload containing "title" and "description".
+To retrieve a specific task, make a GET request to /api/tasks/{id} where {id} is the task's ID.
+To update a task, make a PUT request to /api/tasks/{id} with the JSON payload containing "title", "description", and "completed".
+To delete a task, make a DELETE request to /api/tasks/{id} where {id} is the task's ID.
+That's it! You've created a simple RESTful API using Laravel. Remember that in a real-world application, you would implement authentication, validation, and other security measures to make your API robust and secure.
+
+
+
+
+
+
